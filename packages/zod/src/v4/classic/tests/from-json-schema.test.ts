@@ -148,6 +148,19 @@ test("array with constraints", () => {
   expect(() => schema.parse([1, 2, 3, 4, 5])).toThrow();
 });
 
+test("array with constraints and omitted items", () => {
+  const schema = fromJSONSchema({
+    type: "array",
+    minItems: 2,
+    maxItems: 4,
+  });
+  expect(schema.parse([1, "a"])).toEqual([1, "a"]);
+  expect(schema.parse([1, "a", true, null])).toEqual([1, "a", true, null]);
+  expect(() => schema.parse([1])).toThrow();
+  expect(() => schema.parse([1, 2, 3, 4, 5])).toThrow();
+  expect(z.toJSONSchema(schema)).toMatchObject({ minItems: 2, maxItems: 4 });
+});
+
 test("tuple with prefixItems (draft-2020-12)", () => {
   const schema = fromJSONSchema({
     $schema: "https://json-schema.org/draft/2020-12/schema",
